@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { Sequelize, Model, DataTypes } from 'sequelize';
 
 interface AddressAttributes {
     street: string;
@@ -20,7 +20,7 @@ interface UserAttributes {
 }
 
 
-class User extends Model<UserAttributes> implements UserAttributes {
+class UserClass extends Model<UserAttributes> implements UserAttributes {
     public id!: number;
     public name!: string;
     public email!: string;
@@ -32,7 +32,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
 }
 
 export default (sequelize: Sequelize) => {
-    User.init(
+    UserClass.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -71,7 +71,7 @@ export default (sequelize: Sequelize) => {
                 allowNull: false,
             },
             address: {
-                type: DataTypes.JSONB,
+                type: DataTypes.JSON,
             },
         },
         {

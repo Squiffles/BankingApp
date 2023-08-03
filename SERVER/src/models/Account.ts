@@ -1,4 +1,4 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { Sequelize, Model, DataTypes } from 'sequelize';
 
 
 type accountNumber = `${number}-${number}-${number}-${number}`
@@ -13,7 +13,7 @@ interface AccountAttributes {
     accountBalances: number;
     accountStatus: boolean;
 }
-class Account extends Model<AccountAttributes> implements AccountAttributes {
+class AccountClass extends Model<AccountAttributes> implements AccountAttributes {
     public accountNumber!: accountNumber;
     public accountType!: string;
     public accountBalances!: number;
@@ -24,7 +24,7 @@ class Account extends Model<AccountAttributes> implements AccountAttributes {
 }
 
 export default (sequelize: Sequelize) => {
-    Account.init(
+    AccountClass.init(
         {
             accountNumber: {
                 primaryKey: true,
