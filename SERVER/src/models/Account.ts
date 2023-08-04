@@ -1,9 +1,12 @@
-import { Sequelize, Model, DataTypes } from 'sequelize';
+// ---------------- IMPORTS: ----------------
+import mongoose, { Document, Schema } from "mongoose";
 
 
-type accountNumber = `${number}-${number}-${number}-${number}`
-function isValidAccountNumber(str: string): boolean {
-    const accountNumber = str.split('-');
+// ---------------- CODE: ----------------
+type accountNumber = `${number}-${number}-${number}-${number}`;
+
+const isValidAccountNumber = (str: string): boolean => {
+    const accountNumber = str.split("-");
     return accountNumber.every((group) => /^\d{4}$/.test(group));
 }
 
@@ -13,49 +16,45 @@ interface AccountAttributes {
     accountBalances: number;
     accountStatus: boolean;
 }
-class AccountClass extends Model<AccountAttributes> implements AccountAttributes {
-    public accountNumber!: accountNumber;
-    public accountType!: string;
-    public accountBalances!: number;
-    public accountStatus!: boolean;
-    public validateAccountNumber(): boolean {
-        return isValidAccountNumber(this.accountNumber);
-    }
+
+// Definimos el esquema de Mongoose
+const accountScheme = new Schema<AccountAttributes>({
+    accountNumber: {
+        type: String,
+        required: true,
+        validate: {
+            validator: isValidAccountNumber,
+            message: (props) => `Invalid account number: ${props.value}`,
+        },
+    },
+    accountType: {
+        type: String,
+        enum: ["SAVING", "CURRENT", "SALARY"],
+        required: true,
+    },
+    accountBalances: {
+        type: Number,
+        required: true,
+    },
+    accountStatus: {
+        type: Boolean,
+        required: true,
+    },
+});
+
+// Definimos un método personalizado en el esquema para validar el número de cuenta
+accountScheme.methods.validateAccountNumber = function (): boolean {
+    return isValidAccountNumber(this.accountNumber);
+};
+
+// Definimos la interfaz del documento (esta corrección es importante)
+interface AccountDocument extends Document, AccountAttributes {
+    validateAccountNumber(): boolean;
 }
 
-export default (sequelize: Sequelize) => {
-    AccountClass.init(
-        {
-            accountNumber: {
-                primaryKey: true,
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    isValidAccountNumber(value: string) {
-                        if (!isValidAccountNumber(value)) {
-                            throw new Error(`Invalid account number: %{value}`);
-                        }
-                    }
-                }
-            },
-            accountType: {
-                type: DataTypes.ENUM("SAVING", "CURRENT", "SALARY"),
-                allowNull: false
-            },
-            accountBalances: {
-                type: DataTypes.DECIMAL(16, 4),
-                allowNull: false
-            },
-            accountStatus: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false
-            }
-        },
-        {
-            sequelize,
-            modelName: "Account",
-            timestamps: false,
-            freezeTableName: true
-        }
-    )
-}
+// Creamos el modelo de Mongoose
+const AccountModel = mongoose.model<AccountDocument>("Account", accountScheme);
+
+
+// ---------------- EXPORTS: ----------------
+export default AccountModel;

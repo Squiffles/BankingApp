@@ -3,11 +3,16 @@
         "target": "ESNext",
         "module": "commonjs",
         "strict": true,
-        "outDir": "dist/server",
-        "rootDir": "src"
+        "outDir": "server",
+        "rootDir": ".",
+        "esModuleInterop": true,
+        "types": [
+            "node"
+        ],
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "utils/**/*"
     ],
     "exclude": [
         "node_modules"

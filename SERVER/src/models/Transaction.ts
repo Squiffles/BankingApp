@@ -1,8 +1,10 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+// ---------------- IMPORTS: ----------------
+import mongoose, { Document, Schema } from 'mongoose';
 
 
+
+// ---------------- CODE: ----------------
 interface TransactionAttributes {
-    id: number,
     sender: number,
     receiver: number,
     sentAmount: number,
@@ -10,49 +12,34 @@ interface TransactionAttributes {
     date: string
 }
 
-class TransactionClass extends Model <TransactionAttributes> implements TransactionAttributes {
-    public id!: number;
-    public sender!: number;
-    public receiver!: number;
-    public sentAmount!: number;
-    public receivedAmount!: number;
-    public date!: string;
-}
+interface TransactionDocument extends Document, TransactionAttributes {}
 
-export default (sequelize: Sequelize) => {
-    TransactionClass.init (
-        {
-            id: {
-                primaryKey: true,
-                type: DataTypes.NUMBER,
-                autoIncrement: true
-            },
-            sender: {
-                type: DataTypes.NUMBER,
-                allowNull: false
-            },
-            receiver: {
-                type: DataTypes.NUMBER,
-                allowNull: false
-            },
-            sentAmount: {
-                type: DataTypes.NUMBER,
-                allowNull: false
-            },
-            receivedAmount: {
-                type: DataTypes.NUMBER,
-                allowNull: false
-            },
-            date: {
-                type: DataTypes.STRING,
-                allowNull: false
-            }
-        },
-        {
-            sequelize,
-            modelName: "Transaction",
-            timestamps: false,
-            freezeTableName: true
-        }
-    )
-}
+const transactionScheme = new Schema<TransactionAttributes>({
+    sender: {
+        type: Number,
+        allowNull: false
+    },
+    receiver: {
+        type: Number,
+        allowNull: false
+    },
+    sentAmount: {
+        type: Number,
+        allowNull: false
+    },
+    receivedAmount: {
+        type: Number,
+        allowNull: false
+    },
+    date: {
+        type: String,
+        allowNull: false
+    }
+})
+
+const Transaction = mongoose.model<TransactionDocument>('Transaction', transactionScheme);
+
+
+
+// ---------------- EXPORTS: ----------------
+export default Transaction;

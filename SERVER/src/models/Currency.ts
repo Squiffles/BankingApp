@@ -1,52 +1,43 @@
-import { Sequelize, Model, DataTypes } from 'sequelize';
+// ---------------- IMPORTS: ----------------
+import mongoose, { Document, Schema } from 'mongoose';
 
+
+
+// ---------------- CODE: ----------------
 interface CurrencyAttributes {
-    id: number,
-    name: string,
-    code: string,
-    symbol: string,
-    exchangeRate: number
+    name: string;
+    code: string;
+    symbol: string;
+    exchangeRate: number;
 }
 
+const currencyScheme = new Schema<CurrencyAttributes>({
+    name: {
+        type: String,
+        required: true,
+        maxlength: 10,
+    },
+    code: {
+        type: String,
+        required: true,
+        maxlength: 3,
+    },
+    symbol: {
+        type: String,
+        required: true,
+        maxlength: 1,
+    },
+    exchangeRate: {
+        type: Number,
+        required: true,
+    },
+});
 
-class CurrencyClass extends Model <CurrencyAttributes> implements CurrencyAttributes {
-    id!: number;
-    name!: string;
-    code!: string;
-    symbol!: string;
-    exchangeRate!: number;
-}
+interface CurrencyDocument extends Document, CurrencyAttributes {}
 
-export default (sequelize: Sequelize) => {
-    CurrencyClass.init(
-        {
-            id: {
-                primaryKey: true,
-                type: DataTypes.NUMBER,
-                autoIncrement: true
-            },
-            name: {
-                type: DataTypes.STRING(10),
-                allowNull: false
-            },
-            code: {
-                type: DataTypes.STRING(3),
-                allowNull: false
-            },
-            symbol: {
-                type: DataTypes.STRING(1),
-                allowNull: false
-            },
-            exchangeRate: {
-                type: DataTypes.FLOAT,
-                allowNull: false
-            }
-        },
-        {
-            sequelize,
-            modelName: "Currency",
-            timestamps: false,
-            freezeTableName: true
-        }
-    )
-}
+const CurrencyModel = mongoose.model<CurrencyDocument>('Currency', currencyScheme);
+
+
+
+// ---------------- EXPORTS: ----------------
+export { CurrencyModel, CurrencyAttributes };
